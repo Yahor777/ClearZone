@@ -9,12 +9,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="logo-loading">
+                <i class="fas fa-sparkles"></i>
+                <span>ClearZone</span>
+            </div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
     <!-- Auth Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modalTitle">Zaloguj się</h2>
-                <span class="close" id="closeModal">&times;</span>
+                <button class="close" id="closeModal" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <!-- Login Form -->
@@ -120,7 +133,7 @@
                     </div>
                     <h1>ClearZone</h1>
                 </div>
-                <ul class="nav-menu">
+                <ul class="nav-menu" id="navMenu">
                     <li><a href="#home">Główna</a></li>
                     <li><a href="#services">Usługi</a></li>
                     <li><a href="#areas">Lokalizacje</a></li>
@@ -149,7 +162,7 @@
                         Zaloguj się
                     </button>
                 </div>
-                <div class="hamburger">
+                <div class="hamburger" id="hamburger">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -163,7 +176,9 @@
         <div class="modal-content dashboard-content">
             <div class="dashboard-header">
                 <h2>Panel Klienta</h2>
-                <span class="close" id="closeDashboard">&times;</span>
+                <button class="close" id="closeDashboard" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="dashboard-body">
                 <div class="dashboard-sidebar">
@@ -226,25 +241,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="recent-activity">
-                            <h4>Ostatnia aktywność</h4>
-                            <div class="activity-list">
-                                <div class="activity-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <div>
-                                        <p><strong>Sprzątanie zakończone</strong></p>
-                                        <small>3 stycznia 2025, 18:00</small>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <i class="fas fa-calendar-plus"></i>
-                                    <div>
-                                        <p><strong>Nowe zamówienie złożone</strong></p>
-                                        <small>28 grudnia 2024, 14:30</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Orders Tab -->
@@ -256,39 +252,8 @@
                                 Nowe zamówienie
                             </button>
                         </div>
-                        <div class="orders-list">
-                            <div class="order-card">
-                                <div class="order-header">
-                                    <div class="order-id">#001</div>
-                                    <div class="order-status completed">Zakończone</div>
-                                </div>
-                                <div class="order-details">
-                                    <p><strong>Sprzątanie biura</strong></p>
-                                    <p><i class="fas fa-map-marker-alt"></i> ul. Poznańska 15, Poznań</p>
-                                    <p><i class="fas fa-calendar"></i> 3 stycznia 2025, 18:00</p>
-                                    <p><i class="fas fa-money-bill-wave"></i> 270 zł</p>
-                                </div>
-                                <div class="order-actions">
-                                    <button class="btn-secondary">Zobacz szczegóły</button>
-                                    <button class="btn-primary">Zamów ponownie</button>
-                                </div>
-                            </div>
-                            <div class="order-card">
-                                <div class="order-header">
-                                    <div class="order-id">#002</div>
-                                    <div class="order-status pending">Zaplanowane</div>
-                                </div>
-                                <div class="order-details">
-                                    <p><strong>Sprzątanie tygodniowe</strong></p>
-                                    <p><i class="fas fa-map-marker-alt"></i> ul. Grunwaldzka 8, Poznań</p>
-                                    <p><i class="fas fa-calendar"></i> 15 stycznia 2025, 16:00</p>
-                                    <p><i class="fas fa-money-bill-wave"></i> 320 zł</p>
-                                </div>
-                                <div class="order-actions">
-                                    <button class="btn-secondary">Edytuj</button>
-                                    <button class="btn-danger">Anuluj</button>
-                                </div>
-                            </div>
+                        <div class="orders-list" id="ordersList">
+                            <!-- Orders will be populated by JavaScript -->
                         </div>
                     </div>
 
@@ -335,106 +300,51 @@
                                 </div>
                             </div>
 
-                            <div class="form-section">
-                                <h4><i class="fas fa-clock"></i> Termin i godzina</h4>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="orderDate">Data</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-calendar"></i>
-                                            <input type="date" id="orderDate" name="date" required>
-                                            <span class="input-feedback"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="orderTime">Godzina</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-clock"></i>
-                                            <select id="orderTime" name="time" required>
-                                                <option value="">Wybierz godzinę</option>
-                                                <option value="06:00">06:00 - Wczesny ranek</option>
-                                                <option value="08:00">08:00 - Ranek</option>
-                                                <option value="10:00">10:00 - Przedpołudnie</option>
-                                                <option value="17:00">17:00 - Popołudnie</option>
-                                                <option value="19:00">19:00 - Wieczór</option>
-                                                <option value="weekend">Weekend - do uzgodnienia</option>
-                                            </select>
-                                            <span class="input-feedback"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-section">
-                                <h4><i class="fas fa-map-marker-alt"></i> Adres</h4>
+                            <div class="form-row">
                                 <div class="form-group">
-                                    <label for="orderAddress">Pełny adres</label>
+                                    <label for="orderDate">Data</label>
                                     <div class="input-container">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <input type="text" id="orderAddress" name="address" placeholder="ul. Przykładowa 12, 60-123 Poznań" required>
+                                        <i class="fas fa-calendar"></i>
+                                        <input type="date" id="orderDate" name="date" required>
                                         <span class="input-feedback"></span>
                                     </div>
-                                    <small class="input-help">Podaj dokładny adres z kodem pocztowym</small>
                                 </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="orderFloor">Piętro</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-building"></i>
-                                            <input type="text" id="orderFloor" name="floor" placeholder="np. 2 piętro">
-                                            <span class="input-feedback"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="orderArea">Powierzchnia (m²)</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-ruler-combined"></i>
-                                            <input type="number" id="orderArea" name="area" placeholder="np. 50" min="10" max="1000">
-                                            <span class="input-feedback"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-section">
-                                <h4><i class="fas fa-clipboard-list"></i> Dodatkowe informacje</h4>
                                 <div class="form-group">
-                                    <label for="orderNotes">Uwagi specjalne</label>
+                                    <label for="orderTime">Godzina</label>
                                     <div class="input-container">
-                                        <i class="fas fa-comment"></i>
-                                        <textarea id="orderNotes" name="notes" placeholder="Opisz specjalne wymagania, liczbę pomieszczeń, dostęp do budynku, itp." rows="4"></textarea>
+                                        <i class="fas fa-clock"></i>
+                                        <select id="orderTime" name="time" required>
+                                            <option value="">Wybierz godzinę</option>
+                                            <option value="06:00">06:00 - Wczesny ranek</option>
+                                            <option value="08:00">08:00 - Ranek</option>
+                                            <option value="17:00">17:00 - Popołudnie</option>
+                                            <option value="19:00">19:00 - Wieczór</option>
+                                            <option value="weekend">Weekend</option>
+                                        </select>
                                         <span class="input-feedback"></span>
                                     </div>
-                                    <small class="input-help">Pomożesz nam lepiej przygotować się do sprzątania</small>
                                 </div>
                             </div>
 
-                            <div class="form-section">
-                                <div class="price-summary">
-                                    <h4>Szacunkowa cena</h4>
-                                    <div class="price-breakdown">
-                                        <div class="price-item">
-                                            <span>Usługa podstawowa:</span>
-                                            <span id="basePrice">270 zł</span>
-                                        </div>
-                                        <div class="price-item" id="areaSurcharge" style="display: none;">
-                                            <span>Dopłata za powierzchnię:</span>
-                                            <span id="areaSurchargePrice">0 zł</span>
-                                        </div>
-                                        <div class="price-total">
-                                            <span>Razem:</span>
-                                            <span id="totalPrice">270 zł</span>
-                                        </div>
-                                    </div>
-                                    <small>*Ostateczna cena ustalana jest po oględzinach</small>
+                            <div class="form-group">
+                                <label for="orderAddress">Adres</label>
+                                <div class="input-container">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <input type="text" id="orderAddress" name="address" placeholder="ul. Przykładowa 12, 60-123 Poznań" required>
+                                    <span class="input-feedback"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="orderNotes">Uwagi specjalne</label>
+                                <div class="input-container">
+                                    <i class="fas fa-comment"></i>
+                                    <textarea id="orderNotes" name="notes" placeholder="Opisz specjalne wymagania..." rows="3"></textarea>
+                                    <span class="input-feedback"></span>
                                 </div>
                             </div>
 
                             <div class="form-actions">
-                                <button type="button" class="btn-secondary" onclick="switchTab('overview')">
-                                    <i class="fas fa-arrow-left"></i>
-                                    Anuluj
-                                </button>
                                 <button type="submit" class="btn-primary">
                                     <i class="fas fa-paper-plane"></i>
                                     Złóż zamówienie
@@ -447,72 +357,21 @@
                     <div class="dashboard-tab" id="profile">
                         <h3>Ustawienia profilu</h3>
                         <form class="enhanced-form" id="profileForm">
-                            <div class="form-section">
-                                <h4><i class="fas fa-user"></i> Dane osobowe</h4>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="profileName">Imię i nazwisko</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-user"></i>
-                                            <input type="text" id="profileName" name="name" value="Jan Kowalski" required>
-                                            <span class="input-feedback"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="profilePhone">Telefon</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-phone"></i>
-                                            <input type="tel" id="profilePhone" name="phone" value="+48 123 456 789" required>
-                                            <span class="input-feedback"></span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="form-row">
                                 <div class="form-group">
-                                    <label for="profileEmail">Email</label>
+                                    <label for="profileName">Imię i nazwisko</label>
                                     <div class="input-container">
-                                        <i class="fas fa-envelope"></i>
-                                        <input type="email" id="profileEmail" name="email" value="jan@email.pl" required disabled>
-                                        <span class="input-feedback"></span>
-                                    </div>
-                                    <small class="input-help">Email nie może być zmieniony</small>
-                                </div>
-                            </div>
-
-                            <div class="form-section">
-                                <h4><i class="fas fa-lock"></i> Zmiana hasła</h4>
-                                <div class="form-group">
-                                    <label for="currentPassword">Obecne hasło</label>
-                                    <div class="input-container">
-                                        <i class="fas fa-lock"></i>
-                                        <input type="password" id="currentPassword" name="currentPassword" placeholder="Wprowadź obecne hasło">
-                                        <button type="button" class="toggle-password">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                        <i class="fas fa-user"></i>
+                                        <input type="text" id="profileName" name="name" required>
                                         <span class="input-feedback"></span>
                                     </div>
                                 </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="newPassword">Nowe hasło</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-lock"></i>
-                                            <input type="password" id="newPassword" name="newPassword" placeholder="Minimum 8 znaków">
-                                            <button type="button" class="toggle-password">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <span class="input-feedback"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="confirmNewPassword">Potwierdź nowe hasło</label>
-                                        <div class="input-container">
-                                            <i class="fas fa-lock"></i>
-                                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" placeholder="Powtórz nowe hasło">
-                                            <button type="button" class="toggle-password">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <span class="input-feedback"></span>
-                                        </div>
+                                <div class="form-group">
+                                    <label for="profilePhone">Telefon</label>
+                                    <div class="input-container">
+                                        <i class="fas fa-phone"></i>
+                                        <input type="tel" id="profilePhone" name="phone" required>
+                                        <span class="input-feedback"></span>
                                     </div>
                                 </div>
                             </div>
@@ -536,8 +395,7 @@
         <section id="home" class="hero">
             <div class="hero-background">
                 <div class="hero-gradient"></div>
-                <div class="hero-pattern"></div>
-                <div class="floating-shapes">
+                <div class="hero-shapes">
                     <div class="shape shape-1"></div>
                     <div class="shape shape-2"></div>
                     <div class="shape shape-3"></div>
@@ -551,6 +409,7 @@
                     </div>
                     <h1>Czystość, na którą możesz <span class="highlight">liczyć</span></h1>
                     <p>Działamy sprawnie, dokładnie i dyskretnie w Poznaniu i okolicach. Zadbamy o porządek w Twoim miejscu pracy z najwyższą starannością.</p>
+                    
                     <div class="hero-features">
                         <div class="feature-pill">
                             <i class="fas fa-shield-check"></i>
@@ -565,6 +424,7 @@
                             <span>24/7 dostępność</span>
                         </div>
                     </div>
+                    
                     <div class="hero-actions">
                         <a href="#contact" class="btn-hero primary">
                             <i class="fas fa-calendar-plus"></i>
@@ -575,6 +435,7 @@
                             <span>+48 790 259 392</span>
                         </a>
                     </div>
+                    
                     <div class="trust-indicators">
                         <div class="indicator">
                             <div class="indicator-number">500+</div>
@@ -591,13 +452,11 @@
                     </div>
                 </div>
                 <div class="hero-visual">
-                    <div class="visual-container">
-                        <div class="main-visual">
-                            <div class="visual-icon">
-                                <i class="fas fa-broom"></i>
-                            </div>
+                    <div class="visual-main">
+                        <div class="visual-icon">
+                            <i class="fas fa-broom"></i>
                         </div>
-                        <div class="floating-cards">
+                        <div class="visual-cards">
                             <div class="visual-card card-1">
                                 <i class="fas fa-building"></i>
                                 <span>Biura</span>
@@ -610,20 +469,172 @@
                                 <i class="fas fa-shield-check"></i>
                                 <span>Gwarancja</span>
                             </div>
-                            <div class="visual-card card-4">
-                                <i class="fas fa-star"></i>
-                                <span>Premium</span>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Rest of the content remains the same as previous version -->
-        <!-- I'll continue with the improved form and other sections -->
+        <!-- Areas Section -->
+        <section id="areas" class="areas">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Obsługiwane Lokalizacje</h2>
+                    <p>Świadczymy usługi w Poznaniu i okolicach</p>
+                </div>
+                <div class="areas-grid">
+                    <div class="area-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Poznań - Centrum</h3>
+                        <p>Grunwald, Naramowice</p>
+                    </div>
+                    <div class="area-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Poznań - Południe</h3>
+                        <p>Dębiec, Franowo</p>
+                    </div>
+                    <div class="area-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Okolice Poznania</h3>
+                        <p>Luboń, Swarzędz</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <!-- Contact Section with Enhanced Form -->
+        <!-- Services Section -->
+        <section id="services" class="services">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Nasze Usługi</h2>
+                    <p>Kompleksowe sprzątanie biur dostosowane do Twoich potrzeb</p>
+                </div>
+                
+                <div class="service-main">
+                    <div class="service-card-main">
+                        <div class="service-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3>Sprzątanie Biur</h3>
+                        <div class="service-types">
+                            <div class="type">
+                                <i class="fas fa-calendar-day"></i>
+                                <span>Codzienne</span>
+                            </div>
+                            <div class="type">
+                                <i class="fas fa-calendar-week"></i>
+                                <span>Tygodniowe</span>
+                            </div>
+                        </div>
+                        <div class="price-main">
+                            <span class="price-from">od</span>
+                            <span class="price-amount">270 zł</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-details">
+                    <h3>Zakres naszych prac:</h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Mycie podłóg</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Czyszczenie toalet i kuchni</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Odkurzanie</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Ścieranie kurzu</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Dezynfekcja powierzchni</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Wynoszenie śmieci</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="schedule-section">
+                    <h3>Elastyczne godziny pracy:</h3>
+                    <div class="schedule-grid">
+                        <div class="schedule-card">
+                            <i class="fas fa-sun"></i>
+                            <h4>Rano</h4>
+                            <p>Przed rozpoczęciem pracy</p>
+                        </div>
+                        <div class="schedule-card">
+                            <i class="fas fa-moon"></i>
+                            <h4>Wieczorem</h4>
+                            <p>Po zakończeniu pracy</p>
+                        </div>
+                        <div class="schedule-card">
+                            <i class="fas fa-calendar-weekend"></i>
+                            <h4>Weekendy</h4>
+                            <p>Sobota i niedziela</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Dlaczego ClearZone?</h2>
+                    <p>Profesjonalizm i niezawodność w każdym detalu</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Doświadczenie</h3>
+                            <p>Wieloletnie doświadczenie w branży sprzątania biur</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-check"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Gwarancja</h3>
+                            <p>Pełne ubezpieczenie OC i gwarancja zadowolenia</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Eco-Friendly</h3>
+                            <p>Używamy tylko bezpiecznych, ekologicznych środków</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-secret"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Dyskrecja</h3>
+                            <p>Działamy dyskretnie i profesjonalnie</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
         <section id="contact" class="contact">
             <div class="container">
                 <div class="section-header">
@@ -666,6 +677,7 @@
                         </div>
                     </div>
                     
+                    <!-- CORRECTED FORM WITH PROPER FORMSPREE ENDPOINT -->
                     <form class="enhanced-contact-form" action="https://formspree.io/f/mdkdpaev" method="POST" id="contactForm">
                         <div class="form-header">
                             <h3>Wypełnij formularz - otrzymasz wycenę</h3>
@@ -690,7 +702,6 @@
                                         <input type="tel" id="contactPhone" name="phone" placeholder="+48 123 456 789" required>
                                         <span class="input-feedback"></span>
                                     </div>
-                                    <small class="input-help">Format: +48 123 456 789</small>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -734,7 +745,7 @@
                                         <div class="option-content">
                                             <i class="fas fa-calendar-alt"></i>
                                             <h5>Sprzątanie jednorazowe</h5>
-                                            <p>Głębokie sprzątanie na specjalne okazje</p>
+                                            <p>Głębokie sprzątanie</p>
                                             <span class="price">od 400 zł</span>
                                         </div>
                                     </label>
@@ -743,7 +754,7 @@
                         </div>
 
                         <div class="form-step" data-step="3">
-                            <h4><i class="fas fa-clock"></i> Preferowany termin</h4>
+                            <h4><i class="fas fa-clock"></i> Termin i lokalizacja</h4>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="contactDate">Preferowana data</label>
@@ -752,7 +763,6 @@
                                         <input type="date" id="contactDate" name="date">
                                         <span class="input-feedback"></span>
                                     </div>
-                                    <small class="input-help">Pole opcjonalne</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="contactTime">Preferowana pora</label>
@@ -769,10 +779,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="form-step" data-step="4">
-                            <h4><i class="fas fa-map-marker-alt"></i> Lokalizacja i szczegóły</h4>
                             <div class="form-group">
                                 <label for="contactAddress">Adres biura</label>
                                 <div class="input-container">
@@ -780,8 +786,11 @@
                                     <input type="text" id="contactAddress" name="address" placeholder="ul. Przykładowa 12, 60-123 Poznań" required>
                                     <span class="input-feedback"></span>
                                 </div>
-                                <small class="input-help">Podaj dokładny adres (ulica, numer, kod pocztowy)</small>
                             </div>
+                        </div>
+
+                        <div class="form-step" data-step="4">
+                            <h4><i class="fas fa-info-circle"></i> Dodatkowe informacje</h4>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="contactArea">Powierzchnia (m²)</label>
@@ -790,7 +799,6 @@
                                         <input type="number" id="contactArea" name="area" placeholder="np. 50" min="10" max="1000">
                                         <span class="input-feedback"></span>
                                     </div>
-                                    <small class="input-help">Przybliżona powierzchnia do sprzątania</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="contactRooms">Liczba pomieszczeń</label>
@@ -805,10 +813,9 @@
                                 <label for="contactMessage">Dodatkowe informacje</label>
                                 <div class="input-container">
                                     <i class="fas fa-comment"></i>
-                                    <textarea id="contactMessage" name="message" placeholder="Opisz specjalne wymagania, rodzaj powierzchni, dostęp do budynku, itp." rows="4"></textarea>
+                                    <textarea id="contactMessage" name="message" placeholder="Opisz specjalne wymagania..." rows="4"></textarea>
                                     <span class="input-feedback"></span>
                                 </div>
-                                <small class="input-help">Wszelkie informacje, które pomogą nam lepiej przygotować ofertę</small>
                             </div>
                         </div>
 
@@ -841,7 +848,53 @@
         </section>
     </main>
 
-    <!-- Success Messages -->
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-sparkles"></i>
+                        <h3>ClearZone</h3>
+                    </div>
+                    <p>Profesjonalne sprzątanie biur w Poznaniu i okolicach. Działamy sprawnie, dokładnie i dyskretnie.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Usługi</h4>
+                    <ul>
+                        <li>Sprzątanie biur</li>
+                        <li>Sprzątanie codzienne</li>
+                        <li>Sprzątanie tygodniowe</li>
+                        <li>Dezynfekcja</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Lokalizacje</h4>
+                    <ul>
+                        <li>Luboń</li>
+                        <li>Franowo</li>
+                        <li>Dębiec</li>
+                        <li>Grunwald</li>
+                        <li>Naramowice</li>
+                        <li>Swarzędz</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Kontakt</h4>
+                    <div class="contact-info-footer">
+                        <p><i class="fas fa-phone"></i> +48 790 259 392</p>
+                        <p><i class="fas fa-envelope"></i> Ekonohovich@gmail.com</p>
+                        <p><i class="fas fa-clock"></i> Elastyczne godziny</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ClearZone. Wszystkie prawa zastrzeżone.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notifications -->
     <div id="successMessage" class="notification success">
         <div class="notification-content">
             <i class="fas fa-check-circle"></i>
