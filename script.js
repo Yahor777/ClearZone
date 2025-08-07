@@ -1,54 +1,55 @@
-// Состояние приложения
+// Application State
 const app = {
     currentUser: null,
     currentStep: 1,
     maxSteps: 4,
-    forms: {},
-    validation: {}
+    isLoading: false
 };
 
-// Инициализация приложения
+// Initialize Application
 document.addEventListener('DOMContentLoaded', function() {
+    hideLoadingScreen();
     initializeApp();
     setupEventListeners();
     setupFormValidation();
     setupMultiStepForm();
     loadUserState();
+    setupScrollAnimations();
 });
 
+function hideLoadingScreen() {
+    setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.add('hide');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        }
+    }, 1000);
+}
+
 function initializeApp() {
-    // Настройка минимальной даты для форм
+    // Set minimum date for date inputs
     const dateInputs = document.querySelectorAll('input[type="date"]');
     const today = new Date().toISOString().split('T')[0];
     dateInputs.forEach(input => {
         input.min = today;
     });
     
-    // Настройка телефонных масок
     setupPhoneMasks();
-    
-    // Настройка переключения видимости паролей
     setupPasswordToggles();
 }
 
 function setupEventListeners() {
-    // Модальные окна
     setupModalEvents();
-    
-    // Навигация
     setupNavigationEvents();
-    
-    // Формы
     setupFormEvents();
-    
-    // Dashboard
     setupDashboardEvents();
-    
-    // Мобильное меню
     setupMobileMenu();
 }
 
-// === МОДАЛЬНЫЕ ОКНА ===
+// === MODAL EVENTS ===
 function setupModalEvents() {
     const authModal = document.getElementById('authModal');
     const dashboardModal = document.getElementById('dashboardModal');
@@ -57,10 +58,8 @@ function setupModalEvents() {
     const showRegister = document.getElementById('showRegister');
     const showLogin = document.getElementById('showLogin');
     const openDashboard = document.getElementById('openDashboard');
-    const closeDashboard = document.getElementById('closeDashboard');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Открытие модалки авторизации
     if (loginBtn) {
         loginBtn.addEventListener('click', () => {
             authModal.classList.add('show');
@@ -68,7 +67,6 @@ function setupModalEvents() {
         });
     }
 
-    // Закрытие модалок
     closeButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const modal = e.target.closest('.modal');
@@ -76,14 +74,12 @@ function setupModalEvents() {
         });
     });
 
-    // Закрытие по клику вне модалки
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal')) {
             closeModal(e.target);
         }
     });
 
-    // Переключение между входом и регистрацией
     if (showRegister) {
         showRegister.addEventListener('click', (e) => {
             e.preventDefault();
@@ -98,7 +94,6 @@ function setupModalEvents() {
         });
     }
 
-    // Открытие панели управления
     if (openDashboard) {
         openDashboard.addEventListener('click', (e) => {
             e.preventDefault();
@@ -107,7 +102,6 @@ function setupModalEvents() {
         });
     }
 
-    // Выход из аккаунта
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -117,8 +111,10 @@ function setupModalEvents() {
 }
 
 function closeModal(modal) {
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
 }
 
 function switchAuthForm(form) {
@@ -137,9 +133,8 @@ function switchAuthForm(form) {
     }
 }
 
-// === НАВИГАЦИЯ ===
+// === NAVIGATION EVENTS ===
 function setupNavigationEvents() {
-    // Плавная прокрутка для якорных ссылок
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -153,7 +148,6 @@ function setupNavigationEvents() {
         });
     });
 
-    // Эффект изменения header при прокрутке
     window.addEventListener('scroll', () => {
         const header = document.querySelector('.header');
         if (header) {
@@ -169,28 +163,26 @@ function setupNavigationEvents() {
 }
 
 function setupMobileMenu() {
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
 
-    if (hamburger) {
+    if (hamburger && navMenu) {
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             navMenu.classList.toggle('active');
         });
-    }
 
-    // Закрытие мобильного меню при клике на ссылку
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
         });
-    });
+    }
 }
 
-// === ФОРМЫ ===
+// === FORM EVENTS ===
 function setupFormEvents() {
-    // Обработка форм авторизации
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const contactForm = document.getElementById('contactForm');
@@ -220,11 +212,12 @@ function setupFormEvents() {
 
 async function handleLogin(e) {
     e.preventDefault();
+    if (app.isLoading) return;
+    
     const formData = new FormData(e.target);
     const email = formData.get('email');
     const password = formData.get('password');
 
-    // Валидация
     if (!validateEmail(email)) {
         showError('Nieprawidłowy adres email');
         return;
@@ -235,12 +228,10 @@ async function handleLogin(e) {
         return;
     }
 
-    // Симуляция входа
     try {
-        showLoading();
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Симуляция API
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Сохранение пользователя
         const userData = {
             name: 'Jan Kowalski',
             email: email,
@@ -257,16 +248,17 @@ async function handleLogin(e) {
     } catch (error) {
         showError('Błąd logowania. Spróbuj ponownie.');
     } finally {
-        hideLoading();
+        setLoading(false);
     }
 }
 
 async function handleRegister(e) {
     e.preventDefault();
+    if (app.isLoading) return;
+    
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
 
-    // Валидация
     const validation = validateRegistrationForm(data);
     if (!validation.isValid) {
         showError(validation.message);
@@ -274,10 +266,9 @@ async function handleRegister(e) {
     }
 
     try {
-        showLoading();
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Симуляция API
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Сохранение пользователя
         const userData = {
             name: data.name,
             email: data.email,
@@ -294,14 +285,14 @@ async function handleRegister(e) {
     } catch (error) {
         showError('Błąd rejestracji. Spróbuj ponownie.');
     } finally {
-        hideLoading();
+        setLoading(false);
     }
 }
 
 async function handleContactForm(e) {
     e.preventDefault();
+    if (app.isLoading) return;
     
-    // Проверяем, что форма полностью заполнена
     if (app.currentStep < app.maxSteps) {
         nextStep();
         return;
@@ -310,9 +301,8 @@ async function handleContactForm(e) {
     const formData = new FormData(e.target);
     
     try {
-        showLoading();
+        setLoading(true);
         
-        // Отправка через Formspree
         const response = await fetch(e.target.action, {
             method: 'POST',
             body: formData,
@@ -331,29 +321,29 @@ async function handleContactForm(e) {
     } catch (error) {
         showError('Wystąpił błąd podczas wysyłania formularza. Spróbuj ponownie.');
     } finally {
-        hideLoading();
+        setLoading(false);
     }
 }
 
 async function handleNewOrder(e) {
     e.preventDefault();
+    if (app.isLoading) return;
+    
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
 
     try {
-        showLoading();
+        setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Симуляция создания заказа
         const order = {
             id: '#' + String(Math.floor(Math.random() * 1000)).padStart(3, '0'),
             ...data,
             status: 'pending',
             date: new Date().toLocaleDateString('pl-PL'),
-            price: calculateOrderPrice(data)
+            price: '270 zł'
         };
 
-        // Сохранение заказа
         let orders = JSON.parse(localStorage.getItem('clearzone_orders') || '[]');
         orders.unshift(order);
         localStorage.setItem('clearzone_orders', JSON.stringify(orders));
@@ -366,20 +356,21 @@ async function handleNewOrder(e) {
     } catch (error) {
         showError('Błąd podczas składania zamówienia. Spróbuj ponownie.');
     } finally {
-        hideLoading();
+        setLoading(false);
     }
 }
 
 async function handleProfileUpdate(e) {
     e.preventDefault();
+    if (app.isLoading) return;
+    
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
 
     try {
-        showLoading();
+        setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        // Обновление данных пользователя
         if (app.currentUser) {
             app.currentUser.name = data.name;
             app.currentUser.phone = data.phone;
@@ -392,13 +383,12 @@ async function handleProfileUpdate(e) {
     } catch (error) {
         showError('Błąd podczas aktualizacji profilu. Spróbuj ponownie.');
     } finally {
-        hideLoading();
+        setLoading(false);
     }
 }
 
-// === ВАЛИДАЦИЯ ФОРМ ===
+// === FORM VALIDATION ===
 function setupFormValidation() {
-    // Валидация в реальном времени
     document.querySelectorAll('input[type="email"]').forEach(input => {
         input.addEventListener('blur', () => validateField(input, validateEmail));
         input.addEventListener('input', () => clearFieldError(input));
@@ -414,7 +404,6 @@ function setupFormValidation() {
         input.addEventListener('input', () => clearFieldError(input));
     });
 
-    // Валидация паролей
     const passwordInputs = document.querySelectorAll('input[type="password"]');
     passwordInputs.forEach(input => {
         if (input.name === 'password' || input.id === 'registerPassword') {
@@ -424,7 +413,6 @@ function setupFormValidation() {
         input.addEventListener('input', () => clearFieldError(input));
     });
 
-    // Валидация подтверждения пароля
     const confirmPasswordInputs = document.querySelectorAll('input[name="confirmPassword"]');
     confirmPasswordInputs.forEach(input => {
         input.addEventListener('blur', () => validatePasswordConfirmation(input));
@@ -435,14 +423,14 @@ function setupFormValidation() {
 function validateField(input, validator) {
     const isValid = validator(input.value);
     const container = input.closest('.input-container');
-    const feedback = container.querySelector('.input-feedback');
+    const feedback = container ? container.querySelector('.input-feedback') : null;
     
     if (isValid) {
         input.classList.remove('invalid');
         input.classList.add('valid');
         if (feedback) {
             feedback.textContent = '✓ Prawidłowe';
-            feedback.className = 'input-feedback success';
+                        feedback.className = 'input-feedback success';
         }
     } else {
         input.classList.remove('valid');
@@ -457,7 +445,7 @@ function validateField(input, validator) {
 function clearFieldError(input) {
     input.classList.remove('invalid', 'valid');
     const container = input.closest('.input-container');
-    const feedback = container.querySelector('.input-feedback');
+    const feedback = container ? container.querySelector('.input-feedback') : null;
     if (feedback) {
         feedback.textContent = '';
         feedback.className = 'input-feedback';
@@ -496,14 +484,11 @@ function updatePasswordStrength(input) {
     const password = input.value;
     const strength = calculatePasswordStrength(password);
     const container = input.closest('.form-group');
-    const strengthBar = container.querySelector('.strength-fill');
-    const strengthText = container.querySelector('.strength-text');
+    const strengthBar = container ? container.querySelector('.strength-fill') : null;
+    const strengthText = container ? container.querySelector('.strength-text') : null;
     
     if (!strengthBar || !strengthText) return;
 
-    const levels = ['weak', 'fair', 'good', 'strong'];
-    const texts = ['Słabe', 'Średnie', 'Dobre', 'Bardzo silne'];
-    
     strengthBar.className = 'strength-fill';
     
     if (password.length === 0) {
@@ -529,12 +514,13 @@ function validatePasswordField(input) {
 }
 
 function validatePasswordConfirmation(input) {
-    const password = document.querySelector('input[name="password"]')?.value;
+    const passwordInput = document.querySelector('input[name="password"]');
+    const password = passwordInput ? passwordInput.value : '';
     const confirmPassword = input.value;
     const isValid = password === confirmPassword && password.length > 0;
     
     const container = input.closest('.input-container');
-    const feedback = container.querySelector('.input-feedback');
+    const feedback = container ? container.querySelector('.input-feedback') : null;
     
     if (isValid) {
         input.classList.remove('invalid');
@@ -582,11 +568,10 @@ function getErrorMessage(type) {
     return messages[type] || 'Nieprawidłowa wartość';
 }
 
-// === МНОГОШАГОВАЯ ФОРМА ===
+// === MULTI-STEP FORM ===
 function setupMultiStepForm() {
     const nextBtn = document.getElementById('nextStep');
     const prevBtn = document.getElementById('prevStep');
-    const submitBtn = document.getElementById('submitForm');
 
     if (nextBtn) {
         nextBtn.addEventListener('click', nextStep);
@@ -595,27 +580,23 @@ function setupMultiStepForm() {
     if (prevBtn) {
         prevBtn.addEventListener('click', prevStep);
     }
-
-    // Калькулятор цены
-    setupPriceCalculator();
 }
 
 function nextStep() {
     const currentStepEl = document.querySelector(`.form-step[data-step="${app.currentStep}"]`);
     
-    // Валидация текущего шага
     if (!validateCurrentStep()) {
         return;
     }
 
     if (app.currentStep < app.maxSteps) {
-        // Скрываем текущий шаг
         currentStepEl.classList.remove('active');
         
-        // Переходим к следующему шагу
         app.currentStep++;
         const nextStepEl = document.querySelector(`.form-step[data-step="${app.currentStep}"]`);
-        nextStepEl.classList.add('active');
+        if (nextStepEl) {
+            nextStepEl.classList.add('active');
+        }
         
         updateFormProgress();
         updateFormNavigation();
@@ -625,11 +606,15 @@ function nextStep() {
 function prevStep() {
     if (app.currentStep > 1) {
         const currentStepEl = document.querySelector(`.form-step[data-step="${app.currentStep}"]`);
-        currentStepEl.classList.remove('active');
+        if (currentStepEl) {
+            currentStepEl.classList.remove('active');
+        }
         
         app.currentStep--;
         const prevStepEl = document.querySelector(`.form-step[data-step="${app.currentStep}"]`);
-        prevStepEl.classList.add('active');
+        if (prevStepEl) {
+            prevStepEl.classList.add('active');
+        }
         
         updateFormProgress();
         updateFormNavigation();
@@ -672,8 +657,9 @@ function updateFormNavigation() {
 
 function validateCurrentStep() {
     const currentStepEl = document.querySelector(`.form-step[data-step="${app.currentStep}"]`);
-    const requiredInputs = currentStepEl.querySelectorAll('input[required], select[required]');
+    if (!currentStepEl) return true;
     
+    const requiredInputs = currentStepEl.querySelectorAll('input[required], select[required]');
     let isValid = true;
     
     requiredInputs.forEach(input => {
@@ -683,7 +669,6 @@ function validateCurrentStep() {
         } else {
             input.classList.remove('invalid');
             
-            // Дополнительная валидация по типу
             if (input.type === 'email' && !validateEmail(input.value)) {
                 input.classList.add('invalid');
                 isValid = false;
@@ -704,12 +689,10 @@ function validateCurrentStep() {
 function resetMultiStepForm() {
     app.currentStep = 1;
     
-    // Скрываем все шаги
     document.querySelectorAll('.form-step').forEach(step => {
         step.classList.remove('active');
     });
     
-    // Показываем первый шаг
     const firstStep = document.querySelector('.form-step[data-step="1"]');
     if (firstStep) {
         firstStep.classList.add('active');
@@ -719,104 +702,30 @@ function resetMultiStepForm() {
     updateFormNavigation();
 }
 
-// === КАЛЬКУЛЯТОР ЦЕН ===
-function setupPriceCalculator() {
-    const serviceInputs = document.querySelectorAll('input[name="serviceType"]');
-    const areaInput = document.getElementById('orderArea');
-    
-    serviceInputs.forEach(input => {
-        input.addEventListener('change', updatePrice);
-    });
-    
-    if (areaInput) {
-        areaInput.addEventListener('input', updatePrice);
-    }
-}
-
-function updatePrice() {
-    const selectedService = document.querySelector('input[name="serviceType"]:checked');
-    const area = document.getElementById('orderArea')?.value || 0;
-    
-    if (!selectedService) return;
-    
-    const basePrices = {
-        'daily': 270,
-        'weekly': 320,
-        'onetime': 400
-    };
-    
-    let basePrice = basePrices[selectedService.value] || 270;
-    let surcharge = 0;
-    
-    // Доплата за площадь свыше 100 м²
-    if (area > 100) {
-        surcharge = Math.ceil((area - 100) / 10) * 20;
-    }
-    
-    const totalPrice = basePrice + surcharge;
-    
-    // Обновляем отображение цены
-    const basePriceEl = document.getElementById('basePrice');
-    const areaSurchargeEl = document.getElementById('areaSurcharge');
-    const areaSurchargePriceEl = document.getElementById('areaSurchargePrice');
-    const totalPriceEl = document.getElementById('totalPrice');
-    
-    if (basePriceEl) basePriceEl.textContent = `${basePrice} zł`;
-    if (totalPriceEl) totalPriceEl.textContent = `${totalPrice} zł`;
-    
-    if (areaSurchargeEl && areaSurchargePriceEl) {
-        if (surcharge > 0) {
-            areaSurchargeEl.style.display = 'flex';
-            areaSurchargePriceEl.textContent = `${surcharge} zł`;
-        } else {
-            areaSurchargeEl.style.display = 'none';
-        }
-    }
-}
-
-function calculateOrderPrice(data) {
-    const basePrices = {
-        'daily': 270,
-        'weekly': 320,
-        'onetime': 400
-    };
-    
-    let basePrice = basePrices[data.serviceType] || 270;
-    let surcharge = 0;
-    
-    if (data.area && data.area > 100) {
-        surcharge = Math.ceil((data.area - 100) / 10) * 20;
-    }
-    
-    return `${basePrice + surcharge} zł`;
-}
-
 // === DASHBOARD ===
 function setupDashboardEvents() {
-    // Навигация по табам
     const navItems = document.querySelectorAll('.dashboard-nav .nav-item');
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
-            const tab = e.target.dataset.tab;
-            switchTab(tab);
+            const tab = e.target.closest('.nav-item').dataset.tab;
+            if (tab) {
+                switchTab(tab);
+            }
         });
     });
 }
 
 function switchTab(tabName) {
-    // Скрываем все табы
     document.querySelectorAll('.dashboard-tab').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Показываем выбранный таб
     const targetTab = document.getElementById(tabName);
     if (targetTab) {
         targetTab.classList.add('active');
     }
     
-    // Обновляем навигацию
     document.querySelectorAll('.dashboard-nav .nav-item').forEach(item => {
         item.classList.remove('active');
     });
@@ -826,25 +735,24 @@ function switchTab(tabName) {
         activeNavItem.classList.add('active');
     }
     
-    // Обновляем данные для конкретных табов
     if (tabName === 'orders') {
         updateOrdersDisplay();
     }
 }
 
 function updateOrdersDisplay() {
-    const ordersList = document.querySelector('.orders-list');
+    const ordersList = document.getElementById('ordersList');
     if (!ordersList) return;
     
     const orders = JSON.parse(localStorage.getItem('clearzone_orders') || '[]');
     
     if (orders.length === 0) {
         ordersList.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-clipboard-list"></i>
+            <div style="text-align: center; padding: 3rem; color: #64748b;">
+                <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
                 <h3>Brak zamówień</h3>
                 <p>Nie masz jeszcze żadnych zamówień. Złóż pierwsze zamówienie już dziś!</p>
-                <button class="btn-primary" onclick="switchTab('new-order')">
+                <button class="btn-primary" onclick="switchTab('new-order')" style="margin-top: 1rem;">
                     <i class="fas fa-plus"></i>
                     Nowe zamówienie
                 </button>
@@ -891,7 +799,7 @@ function getServiceText(serviceType) {
     return services[serviceType] || serviceType;
 }
 
-// === УТИЛИТЫ ===
+// === UTILITIES ===
 function setupPhoneMasks() {
     const phoneInputs = document.querySelectorAll('input[type="tel"]');
     phoneInputs.forEach(input => {
@@ -905,7 +813,7 @@ function setupPhoneMasks() {
             if (value.length > 0 && !value.startsWith('48')) {
                 if (value.length <= 9) {
                     value = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
-                    if (value.length === 11) { // 3 цифры + пробел + 3 цифры + пробел + 3 цифры
+                    if (value.length === 11) {
                         value = '+48 ' + value;
                     }
                 }
@@ -923,25 +831,32 @@ function setupPasswordToggles() {
             const input = this.parentElement.querySelector('input');
             const icon = this.querySelector('i');
             
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+            if (input && icon) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
             }
         });
     });
 }
 
-// === УПРАВЛЕНИЕ СОСТОЯНИЕМ ПОЛЬЗОВАТЕЛЯ ===
+// === USER STATE MANAGEMENT ===
 function loadUserState() {
     const savedUser = localStorage.getItem('clearzone_user');
     if (savedUser) {
-        app.currentUser = JSON.parse(savedUser);
-        updateUIForLoggedInUser(app.currentUser);
+        try {
+            app.currentUser = JSON.parse(savedUser);
+            updateUIForLoggedInUser(app.currentUser);
+        } catch (e) {
+            console.error('Error parsing saved user data:', e);
+            localStorage.removeItem('clearzone_user');
+        }
     }
 }
 
@@ -958,14 +873,11 @@ function updateUIForLoggedInUser(userData) {
     if (dashboardUserName) dashboardUserName.textContent = userData.name;
     if (dashboardUserEmail) dashboardUserEmail.textContent = userData.email;
     
-    // Заполняем поля профиля
     const profileName = document.getElementById('profileName');
     const profilePhone = document.getElementById('profilePhone');
-    const profileEmail = document.getElementById('profileEmail');
     
     if (profileName) profileName.value = userData.name;
     if (profilePhone) profilePhone.value = userData.phone;
-    if (profileEmail) profileEmail.value = userData.email;
 }
 
 function logout() {
@@ -983,7 +895,7 @@ function logout() {
     showSuccess('Zostałeś wylogowany pomyślnie');
 }
 
-// === УВЕДОМЛЕНИЯ ===
+// === NOTIFICATIONS ===
 function showSuccess(message) {
     showNotification(message, 'success');
 }
@@ -1006,16 +918,18 @@ function showNotification(message, type) {
     }
 }
 
-function showLoading() {
-    // Можно добавить загрузочный индикатор
-    document.body.style.cursor = 'wait';
+function setLoading(loading) {
+    app.isLoading = loading;
+    document.body.style.cursor = loading ? 'wait' : 'default';
+    
+    // Disable/enable all buttons during loading
+    const buttons = document.querySelectorAll('button, input[type="submit"]');
+    buttons.forEach(btn => {
+        btn.disabled = loading;
+    });
 }
 
-function hideLoading() {
-    document.body.style.cursor = 'default';
-}
-
-// === АНИМАЦИИ ===
+// === ANIMATIONS ===
 function setupScrollAnimations() {
     const observerOptions = {
         threshold: 0.1,
@@ -1031,8 +945,8 @@ function setupScrollAnimations() {
         });
     }, observerOptions);
 
-    // Элементы для анимации
-    document.querySelectorAll('.contact-card, .stat-card, .order-card, .service-option').forEach(element => {
+    const animatedElements = document.querySelectorAll('.contact-card, .stat-card, .order-card, .area-card, .feature, .schedule-card');
+    animatedElements.forEach(element => {
         element.style.opacity = '0';
         element.style.transform = 'translateY(20px)';
         element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
@@ -1040,5 +954,34 @@ function setupScrollAnimations() {
     });
 }
 
-// Инициализация анимаций после загрузки DOM
-document.addEventListener('DOMContentLoaded', setupScrollAnimations);
+// === GLOBAL ERROR HANDLING ===
+window.addEventListener('error', function(e) {
+    console.error('JavaScript Error:', e.error);
+    showError('Wystąpił nieoczekiwany błąd. Odśwież stronę i spróbuj ponownie.');
+});
+
+// === UTILITY FUNCTIONS ===
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Export for global access
+window.switchTab = switchTab;
+window.showSuccess = showSuccess;
+window.showError = showError;
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
+
